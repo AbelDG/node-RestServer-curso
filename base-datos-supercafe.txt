@@ -1,0 +1,23 @@
+CATEGORIAS
+_id:automatico
+nombre:string
+usuario:objectId
+
+USUARIOS
+_id: automatico
+nombre: string
+email:string
+password: string-crypt
+google: boolean
+role:string
+img:string
+estado:boolean
+
+PRODUCTOS
+_id:automatico
+nombre:string
+precioUni:number
+categoria:objectId
+disponible: boolean
+usuario:ObjectId
+
