@@ -19,7 +19,7 @@ let urlDB;
 if (process.env.NODE_ENV === 'dev') {
     urlDB = 'mongodb://localhost:27017/cafe';
 } else {
-    urlDB = 'mongodb+srv://abdogon95:506OfAzwM9TFpECx@cluster0.yn0ja.mongodb.net/cafe?retryWrites=true&w=majority';
+    urlDB = process.env.MONGO_URL;
 }
 
 console.log(`Conectado a la base de datos ${color.yellow(urlDB)}`);
