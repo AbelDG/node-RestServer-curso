@@ -2,23 +2,15 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const _ = require('underscore');
 
-
+const { verificaToken, verificaAdminRole } = require('../middlewares/autenticacion');
 const Usuario = require('../models/usuario');
 
 const app = express();
 
-//Funcion de error
 
-function getError(error, statusCode) {
-    if (error) {
-        return res.status(statusCode).json({
-            ok: false,
-            error
-        })
-    }
-}
 
-app.get('/usuario', function(req, res) {
+app.get('/usuario', verificaToken, function(req, res) { //VerificaToken es un middleware, es decir, se ejecutará cuando se lance una petición post a esta ruta
+
 
     let desde = Number(req.query.desde) || 0;
     let limite = Number(req.query.limite) || 5;
@@ -27,7 +19,12 @@ app.get('/usuario', function(req, res) {
         .skip(desde)
         .limit(limite)
         .exec((err, usuarios) => {
-            getError(err, 400);
+            if (err) {
+                return res.status(400).json({
+                    ok: false,
+                    err
+                })
+            }
             Usuario.countDocuments({ estado: true }, (err, conteo) => {
                 res.json({
                     ok: true,
@@ -37,7 +34,7 @@ app.get('/usuario', function(req, res) {
             })
         });
 })
-app.post('/usuario', function(req, res) {
+app.post('/usuario', verificaToken, function(req, res) {
     let body = req.body;
 
     let usuario = new Usuario({
@@ -48,7 +45,12 @@ app.post('/usuario', function(req, res) {
     });
 
     usuario.save((err, usuarioDB) => { //funcion de mongoose
-        getError(err, 400);
+        if (err) {
+            return res.status(400).json({
+                ok: false,
+                err
+            })
+        }
 
         res.json({
             ok: true,
@@ -57,27 +59,35 @@ app.post('/usuario', function(req, res) {
     });
 
 })
-app.put('/usuario/:id', function(req, res) {
+app.put('/usuario/:id', [verificaToken, verificaAdminRole], function(req, res) {
     let id = req.params.id; ///usuario/:ID -> req.params.ID <--> Es decir, esas ID deben coincidir en nombre
     let body = _.pick(req.body, ['nombre', 'email', 'img', 'estado']); //Para filtrar que elementos del objeto quiero que se puedan modificar
 
     Usuario.findByIdAndUpdate(id, body, { new: true, runValidators: true }, (err, usuarioDB) => {
-        getError(err, 400);
+        if (err) {
+            return res.status(400).json({
+                ok: false,
+                err
+            })
+        }
         res.json({
             ok: true,
-            usuario: usuarioDB
+            usuario: usuarioDB,
         });
     });
 
 })
-app.delete('/usuario/:id', function(req, res) {
+app.delete('/usuario/:id', [verificaToken, verificaAdminRole], function(req, res) {
     let id = req.params.id;
 
-    let deshabilitado = {
-        estado: false
-    }
-    Usuario.findByIdAndUpdate(id, deshabilitado, { new: true }, (err, usuarioBorrado) => {
-        getError(err, 400);
+
+    Usuario.findByIdAndUpdate(id, { estado: false }, { new: true }, (err, usuarioBorrado) => {
+        if (err) {
+            return res.status(400).json({
+                ok: false,
+                err
+            })
+        }
 
         if (usuarioBorrado === null) {
             return res.status(400).json({
