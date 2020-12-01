@@ -40,7 +40,7 @@ if (process.env.NODE_ENV === 'dev') {
     urlDB = process.env.MONGO_URL;
 }
 
-
+urlDB = 'mongodb://localhost:27017/cafe';
 console.log(`Conectado a la base de datos ${color.yellow(urlDB)}`);
 process.env.URLDB = urlDB;
 
