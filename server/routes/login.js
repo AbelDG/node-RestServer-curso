@@ -80,6 +80,7 @@ app.post('/google', async(req, res) => {
 
     let googleUser = await verify(token)
         .catch(error => {
+            console.log(error);
             return res.status(403).json({
                 ok: false,
                 message: 'No se ha podido verificar el token',
@@ -141,7 +142,7 @@ app.post('/google', async(req, res) => {
                     ok: true,
                     usuario: userDB,
                     token
-                })
+                });
             });
         }
     });
