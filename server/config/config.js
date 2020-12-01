@@ -40,5 +40,13 @@ if (process.env.NODE_ENV === 'dev') {
     urlDB = process.env.MONGO_URL;
 }
 
+
 console.log(`Conectado a la base de datos ${color.yellow(urlDB)}`);
 process.env.URLDB = urlDB;
+
+
+// ========================================
+// GOOGLE Client ID
+// ========================================
+
+process.env.CLIENT_ID = process.env.CLIENT_ID || '486159167123-mruu05av2mqmi4stqg7hgonf6u7910lk.apps.googleusercontent.com';
