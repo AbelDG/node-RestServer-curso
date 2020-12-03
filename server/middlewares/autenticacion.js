@@ -46,11 +46,32 @@ let verificaAdminRole = (req, res, next) => {
 }
 
 
+// ====================
+// Verificar token en Imagenes
+// ====================
+
+let verificaTokenImg = (req, res, next) => {
+    let token = req.query.token;
+
+    jwt.verify(token, process.env.SEED, (err, decoded) => {
+        if (err) {
+            return res.status(401).json({ //401 = No autorizado
+                ok: false,
+                err: {
+                    message: 'Token no válido'
+                }
+            })
+        }
+
+        // req.usuario = decoded.usuario; //Decoded es la información que lleva el token
+        next(); //Si no utilizamos next al final del middleware, jamás se ejecutará el resto de código de la petición get, post, put etc...
+    })
 
 
-
+}
 
 module.exports = {
     verificaToken,
-    verificaAdminRole
+    verificaAdminRole,
+    verificaTokenImg
 }
